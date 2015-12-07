@@ -1,0 +1,4 @@
+.idea/**
+out/**
+HtmlToPdfWrapper.iml
+*.log

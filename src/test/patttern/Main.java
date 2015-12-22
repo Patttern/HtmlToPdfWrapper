@@ -9,8 +9,8 @@ public class Main {
   public static void main(String[] args) {
     try {
       Wrapper wrapper = new Wrapper();
-      wrapper.convertLocal("/home/pattern/work/HtmlToPdfWrapper/result/sources/QFileInfo_Class.html", "/home/pattern/work/HtmlToPdfWrapper/result/out/test.pdf");
-//    wrapper.convertRemote("http://doc.qt.io/qt-5/qfileinfo.html", "/home/pattern/work/HtmlToPdfWrapper/result/out/test.pdf");
+      wrapper.convertLocal("/home/pattern/work/HtmlToPdfWrapper/result/sources/QFileInfo_Class.html", "/home/pattern/work/HtmlToPdfWrapper/result/out/test_local.pdf");
+//      wrapper.convertRemote("http://doc.qt.io/qt-5/qfileinfo.html", "/home/pattern/work/HtmlToPdfWrapper/result/out/test_remote.pdf");
     } catch (Exception e) {
       e.printStackTrace();
     }

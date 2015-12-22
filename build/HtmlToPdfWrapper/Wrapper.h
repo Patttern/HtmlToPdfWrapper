@@ -6,6 +6,7 @@
 
 wkhtmltopdf_global_settings * gs;
 wkhtmltopdf_object_settings * os;
+wkhtmltopdf_converter * conv;
 
 void prepare();
 int run_convert();

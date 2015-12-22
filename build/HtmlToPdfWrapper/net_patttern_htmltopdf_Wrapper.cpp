@@ -83,8 +83,6 @@ void warning(wkhtmltopdf_converter * c, const char * msg) {
 }
 
 int run_convert () {
-  wkhtmltopdf_converter * conv;
-
   /* Create the actual converter object used to convert the pages */
   conv = wkhtmltopdf_create_converter(gs);
 
@@ -108,8 +106,9 @@ int run_convert () {
   wkhtmltopdf_add_object(conv, os, NULL);
 
   /* Perform the actual convertion */
-  if (!wkhtmltopdf_convert(conv))
+  if (!wkhtmltopdf_convert(conv)) {
     fprintf(stderr, "Convertion failed!");
+  }
 
   /* Output possible http error code encountered */
   printf("httpErrorCode: %d\n", wkhtmltopdf_http_error_code(conv));

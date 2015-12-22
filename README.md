@@ -1,5 +1,5 @@
 # HtmlToPdfWrapper
-Wrapper for wkhtmltox library
+net.patttern.htmltopdf.Wrapper for wkhtmltox library
 
 ### Source ###
 

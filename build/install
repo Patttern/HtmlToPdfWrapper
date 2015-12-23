@@ -1,0 +1,32 @@
+#!/bin/sh
+
+CURRDIR=$PWD
+BUILDDIR=${CURRDIR}/build
+SOURCE=${CURRDIR}/src
+LIBS=${CURRDIR}/libs
+PROJECT_FILE=${CURRDIR}/HtmlToPdfWrapper.pro
+
+QMAKE_EXEC=`which qmake`
+
+_line () {
+  printf %50s | tr ' ' '='
+  echo
+}
+
+_preinstall () {
+	_line
+	echo "TODO: Check dependencies"
+	_line
+}
+
+if [ "${QMAKE_EXEC}0" = '0' ]; then
+  echo 'qmake not found.'
+  exit 1
+else
+  mkdir -p ${BUILDDIR}
+  cd ${BUILDDIR}
+  _preinstall
+  ${QMAKE_EXEC} -spec linux-g++ -o Makefile ${PROJECT_FILE}
+  make clean install
+  exit 0
+fi

@@ -13,8 +13,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 TARGET = HtmlToPdfWrapper
 TEMPLATE = lib
 
-INCLUDEPATH += /usr/lib/jvm/java-8-oracle/include \
-  /usr/lib/jvm/java-8-oracle/include/linux
+JAVAHOME = $$(JAVA_HOME)
+
+INCLUDEPATH += $$JAVAHOME/include \
+  $$JAVAHOME/include/linux
 
 DEFINES += HTMLTOPDFWRAPPER_LIBRARY
 

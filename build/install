@@ -1,32 +1,150 @@
 #!/bin/sh
 
+PKGRELEASE='1.0.0'
+
 CURRDIR=$PWD
 BUILDDIR=${CURRDIR}/build
 SOURCE=${CURRDIR}/src
 LIBS=${CURRDIR}/libs
 PROJECT_FILE=${CURRDIR}/HtmlToPdfWrapper.pro
 
-QMAKE_EXEC=`which qmake`
-
 _line () {
   printf %50s | tr ' ' '='
   echo
 }
 
-_preinstall () {
-	_line
-	echo "TODO: Check dependencies"
-	_line
+_check_os () {
+  OS=`lsb_release -si | tr [:upper:] [:lower:]`
+  case $OS in
+    debian | \
+    ubuntu )
+       isLinux=1
+       OSFAMILY='debian'
+       PACKAGEMANAGER='apt-get'
+       INSTALLCMD='install'
+       REMOVECMD='-y purge'
+       ;;
+    redhat | \
+    centos )
+       isLinux=1
+       OSFAMILY='redhat'
+       PACKAGEMANAGER='yum'
+       INSTALLCMD='install'
+       REMOVECMD='-y erase'
+       ;;
+  esac
 }
 
-if [ "${QMAKE_EXEC}0" = '0' ]; then
-  echo 'qmake not found.'
-  exit 1
-else
+# Проверка доступа из-под суперпользователя
+_check_root () {
+  if [ "$(id -u)" != '0' ]; then
+    sudo_match='sudo '
+  else
+    sudo_match=''
+  fi
+}
+
+_preinstall () {
+  _line
+  echo "Установка программ, необходимых для компиляции..."
+  _line
+
+  _check_root
+  REQUIRED_PACKAGES='qt5-qmake qt5-default libqt5network5 libqt5svg5-dev libqt5webkit5-dev libqt5xmlpatterns5-dev libqt5printsupport5'
+  for rp in ${REQUIRED_PACKAGES}; do
+    if [ "${rp}0" = "0" ]; then
+      _line
+      echo "Установка ${rp}..."
+      _line
+      ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} ${rp}
+    fi
+  done
+
   mkdir -p ${BUILDDIR}
+  mkdir -p ${LIBS}
+}
+
+_build () {
+  _line
+  echo "Сборка библиотеки..."
+  _line
+
   cd ${BUILDDIR}
-  _preinstall
+  QMAKE_EXEC=`which qmake`
   ${QMAKE_EXEC} -spec linux-g++ -o Makefile ${PROJECT_FILE}
   make clean install
+}
+
+_package () {
+  _line
+  echo "Создание пакетов..."
+  _line
+
+# --pkgname=<name>               Установить имя
+# --pkgversion=<version>         Установить версию
+# -A, --arch, --pkgarch=<arch>   Установить архитектуру
+# --pkgrelease=<release>         Установить версию релиза
+# --pkglicense=<license>         Установить лицензию
+# --pkggroup=<group>             Установить программную группу
+# --pkgsource=<source>           Установить пути к исходникам
+# --pkgaltsource=<altsource>     Установить альтернативные пути к исходникам
+# --pakdir=<directory>           Созданные пакеты будут храниться в этом каталоге
+# --maintainer=<email addr>      Создатель пакета (.deb)
+# --provides=<list>              Features provided by this package
+# --requires=<list>              Features required by this package
+# --conflicts=<list>             Packages that this package cannot be installed with (.deb)
+# --replaces=<list>              Packages that this package replaces (.deb)
+# --rpmflags=<flags>             Флаги для установщика rpm
+# --rpmi                         Use the -i flag for rpm when installing a .rpm
+# --rpmu                         Use the -U flag for rpm when installing a .rpm
+# --dpkgflags=<flags>            Флаги для установщика dpkg
+# --spec=<path>                  расположение файла .spec
+# --nodoc                        Не включать файлы документации
+
+  PKGVER=`date +%Y%M%D`
+  CI_ARGS="--nodoc --maintainer=patttern@gmail.com --pkgname=libhtmltopdfwrapper --pkgversion=${PKGVER} --pkgrelease=${PKGRELEASE} --pkglicense=GPL --pkggroup=checkinstall --pkgsource=libs --provides=libs --install=no -y "
+  CHECKINSTALL=`which checkinstall`
+  if [ "${CHECKINSTALL}0" = "0" ]; then
+    _check_root
+    ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} checkinstall
+    CHECKINSTALL=`which checkinstall`
+  fi
+  cd ${BUILDDIR}
+  echo 'HtmlToPdf wrapper library with WebKit for using JNI (JAVA).' > description-pak
+  ${sudo_match}${CHECKINSTALL} ${CI_ARGS} -D
+#  mv ${BUILDDIR}/*.deb ${LIBS}
+  ${sudo_match}${CHECKINSTALL} ${CI_ARGS} -R
+#  mv ${BUILDDIR}/*.rpm ${LIBS}
+  ${sudo_match}${CHECKINSTALL} ${CI_ARGS} -S
+#  mv ${BUILDDIR}/*.s ${LIBS}
+}
+
+_clean () {
+  _line
+  echo "Зачистка мусора..."
+  _line
+
+  cd ${CURRDIR}
+#  rm -rf ${BUILDDIR}/*
+  rm Makefile
+}
+
+_install () {
+  _preinstall
+  _build
+  _package
+  _clean
   exit 0
+}
+
+_check_os
+
+if [ "${OSFAMILY}" = 'debian' ]; then
+  _install
+else
+  _line
+  echo "Данный установщик предназначен для linux-систем семейства DEBIAN. Выход."
+  _line
+  exit 1
 fi
+

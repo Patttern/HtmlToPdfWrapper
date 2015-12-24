@@ -3,7 +3,7 @@
 # Project created by QtCreator 2015-12-22T16:01:12
 #
 #-------------------------------------------------
-# qt5-qmake qt5-default libqt5svg5-dev libqt5webkit5-dev libqt5xmlpatterns5-dev
+# qt5-qmake qt5-default libqt5network5 libqt5svg5-dev libqt5webkit5-dev libqt5xmlpatterns5-dev libqt5printsupport5
 
 QT       += network svg webkitwidgets xmlpatterns
 QT       -= gui

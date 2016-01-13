@@ -121,6 +121,12 @@ _build () {
   _line
 
   cd ${BUILDDIR}
+
+  JAVAHOMEPATH=`echo $JAVA_HOME`
+  if [ "${JAVAHOMEPATH}0" = "0" ]; then
+    export JAVA_HOME="$(update-alternatives --query java | grep 'Value: ' | grep -o '/.*/jre' | sed 's/\/jre//')"
+  fi
+
   QMAKE_EXEC=`which qmake`
   ${QMAKE_EXEC} -spec linux-g++ -o Makefile ${PROJECT_FILE}
   make clean install

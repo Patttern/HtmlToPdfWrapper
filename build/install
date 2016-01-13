@@ -80,7 +80,9 @@ _preinstall () {
   echo "Установка программ, необходимых для компиляции..."
   _line
 
-  REQUIRED_PACKAGES='qt5-qmake
+  REQUIRED_PACKAGES='oracle-java8-installer
+                     oracle-java8-set-default
+                     qt5-qmake
                      qt5-default
                      libqt5network5
                      libqt5svg5-dev
@@ -94,7 +96,7 @@ _preinstall () {
       _line
       echo "Установка ${rp}..."
       _line
-      ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} ${rp}
+      ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} ${rp} -y
     fi
   done
 

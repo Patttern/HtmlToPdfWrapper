@@ -96,6 +96,13 @@ _preinstall () {
       _line
       echo "Установка ${rp}..."
       _line
+
+      if [ ${rp} = "oracle-java8-installer" ]; then
+        ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} python-software-properties -y
+        ${sudo_match}add-apt-repository ppa:webupd8team/java -y
+        ${sudo_match}${PACKAGEMANAGER} update
+      fi
+
       ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} ${rp} -y
     fi
   done

@@ -99,11 +99,10 @@ _preinstall () {
 
       if [ ${rp} = "oracle-java8-installer" ]; then
         ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} python-software-properties -y
-        su -
-        echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main\ndeb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /etc/apt/sources.list.d/webupd8team-java.list
-        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+        ${sudo_match}touch /etc/apt/sources.list.d/webupd8team-java.list
+        ${sudo_match}echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main\ndeb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /etc/apt/sources.list.d/webupd8team-java.list
+        ${sudo_match}apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
         ${PACKAGEMANAGER} update
-        exit
       fi
 
       ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} ${rp} -y

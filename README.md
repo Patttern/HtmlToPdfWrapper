@@ -3,8 +3,8 @@ HtmlToPdf wrapper library with WebKit for using JNI (JAVA).
 
 ### Source
 
-Convert HTML to PDF using Webkit (QtWebKit)
-[Official Site](http://wkhtmltopdf.org/)
+Convert HTML to PDF using Webkit (QtWebKit)<br>
+[Official Site](http://wkhtmltopdf.org/)<br>
 [Git repository](https://github.com/wkhtmltopdf/wkhtmltopdf)
 
 ## TODO

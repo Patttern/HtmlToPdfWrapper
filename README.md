@@ -1,10 +1,28 @@
 # HtmlToPdfWrapper
-net.patttern.htmltopdf.Wrapper for wkhtmltox library
+HtmlToPdf wrapper library with WebKit for using JNI (JAVA).
 
-### Source ###
+### Source
 
 Convert HTML to PDF using Webkit (QtWebKit)
 [Official Site](http://wkhtmltopdf.org/)
 [Git repository](https://github.com/wkhtmltopdf/wkhtmltopdf)
 
-[JavaDoc of JNA](https://jna.java.net/javadoc/overview-summary.html)
+## TODO
+
+### README.md:
+
+  - описание
+  - установка
+  - использование
+  - добавление функционала
+  - что-то еще
+
+### C++
+
+  - включение/отключение отладочного режима
+  - конфигурирование (???)
+
+### JAVA
+
+  - включение/отключение отладочного режима
+  - конфигурирование (???)

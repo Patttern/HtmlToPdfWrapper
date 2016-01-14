@@ -21,14 +21,15 @@ PKGARCH='amd64'
 LIBNAME='libHtmlToPdfWrapper'
 
 CURRDIR=$PWD
+ROOTDIR=${CURRDIR}/..
 BUILDDIR=${CURRDIR}/build
 SOURCE=${CURRDIR}/src
 LIBS=${CURRDIR}/libs
 PACKAGES=${CURRDIR}/packages
 PROJECT_FILE=${CURRDIR}/HtmlToPdfWrapper.pro
-ROOTDIR=${CURRDIR}/${PKGNAME}
-DEBIANDIR=${ROOTDIR}/DEBIAN
-TARGETDIR=${ROOTDIR}/usr/lib
+ROOTPKGDIR=${CURRDIR}/${PKGNAME}
+DEBIANDIR=${ROOTPKGDIR}/DEBIAN
+TARGETDIR=${ROOTPKGDIR}/usr/lib
 
 umask 022
 
@@ -90,6 +91,7 @@ _preinstall () {
                      libqt5xmlpatterns5-dev
                      libqt5printsupport5
                      alien'
+
   for rp in ${REQUIRED_PACKAGES}; do
     reqpkg=`dpkg -l | grep ${rp}`
     if [ "${reqpkg}0" = "0" ]; then
@@ -99,12 +101,16 @@ _preinstall () {
 
       if [ ${rp} = "oracle-java8-installer" ]; then
         ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} python-software-properties -y
+
         if [ ! -e /etc/apt/sources.list.d/webupd8team-java.list ]; then
-          echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main # Oracle JDK8\ndeb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main # Oracle JDK8 Source" | ${sudo_match}tee /etc/apt/sources.list.d/webupd8team-java.list
+          echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main # Oracle JDK8\ndeb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main # Oracle JDK8 Source" \
+            | ${sudo_match}tee /etc/apt/sources.list.d/webupd8team-java.list
           ${sudo_match}apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+          ${sudo_match}${PACKAGEMANAGER} update
         fi
-        ${sudo_match}${PACKAGEMANAGER} update
-        echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | ${sudo_match}/usr/bin/debconf-set-selections
+
+        echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true \
+          | ${sudo_match}/usr/bin/debconf-set-selections
       fi
 
       ${sudo_match}${PACKAGEMANAGER} ${INSTALLCMD} ${rp} -y
@@ -120,15 +126,23 @@ _build () {
   echo "Сборка библиотеки..."
   _line
 
-  cd ${BUILDDIR}
-
+  # Определяем JAVA_HOME
   JAVAHOMEPATH=`echo $JAVA_HOME`
   if [ "${JAVAHOMEPATH}0" = "0" ]; then
     export JAVA_HOME="$(update-alternatives --query java | grep 'Value: ' | grep -o '/.*/jre' | sed 's/\/jre//')"
   fi
 
+  # Компилируем Wrapper
+  javac -d ${CURRDIR}/src ${ROOTDIR}/src/net/patttern/htmltopdf/Wrapper.java
+  cd ${CURRDIR}/src
+  # Создаем заголовочный h-файл Wrapper-а для С++
+  javah net.patttern.htmltopdf.Wrapper
+  cd ${BUILDDIR}
+
+  # Компилируем библиотеку
   QMAKE_EXEC=`which qmake`
-  ${QMAKE_EXEC} -spec linux-g++ -o Makefile ${PROJECT_FILE}
+#  ${QMAKE_EXEC} -spec linux-g++ -o Makefile ${PROJECT_FILE}
+  ${QMAKE_EXEC} ${PROJECT_FILE} -r -spec linux-g++
   make clean install
 }
 
@@ -150,7 +164,7 @@ _package_deb () {
   ln -s ${LIBNAME}.so.${PKGRELEASE} ${LIBNAME}.so.${PKGMAJOR}
   ln -s ${LIBNAME}.so.${PKGRELEASE} ${LIBNAME}.so
 
-  cd ${ROOTDIR}
+  cd ${ROOTPKGDIR}
   find usr -xtype f -exec md5sum {} >> ${DEBIANDIR}/md5sums \;
 
   cp ${CURRDIR}/../LICENSE ${DEBIANDIR}/copyright
@@ -160,7 +174,7 @@ _package_deb () {
   mv ${PKGNAME}.deb ${PACKAGES}/${PKGNAME}_${PKGRELEASE}-${PKGDATEBUILD}_${PKGARCH}.deb
 
   if [ ${DEBUG} = "0" ]; then
-    rm -rf ${ROOTDIR}
+    rm -rf ${ROOTPKGDIR}
   fi
 }
 
@@ -210,7 +224,7 @@ _install () {
 
 _check_os
 
-if [ "${OSFAMILY}" = 'debian' ]; then
+if [ ${OSFAMILY} = 'debian' ]; then
   _install
   exit 0
 else

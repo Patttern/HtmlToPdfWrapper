@@ -7,8 +7,8 @@
 wkhtmltopdf_global_settings * gs;
 wkhtmltopdf_object_settings * os;
 wkhtmltopdf_converter * conv;
+bool debugMode = false;
 
-void prepare();
 int run_convert();
 
 #endif // __WRAPPER_H__

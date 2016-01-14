@@ -9,19 +9,51 @@ extern "C" {
 #endif
 /*
  * Class:     net_patttern_htmltopdf_Wrapper
- * Method:    convertLocal
- * Signature: (Ljava/lang/String;Ljava/lang/String;)I
+ * Method:    init
+ * Signature: (Z)V
  */
-JNIEXPORT jint JNICALL Java_net_patttern_htmltopdf_Wrapper_convertLocal
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_init
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     net_patttern_htmltopdf_Wrapper
+ * Method:    setSource
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setSource
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_patttern_htmltopdf_Wrapper
+ * Method:    setDestination
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setDestination
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     net_patttern_htmltopdf_Wrapper
+ * Method:    setGlobalSettings
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setGlobalSettings
   (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     net_patttern_htmltopdf_Wrapper
- * Method:    convertRemote
- * Signature: (Ljava/lang/String;Ljava/lang/String;)I
+ * Method:    setObjectSettings
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT jint JNICALL Java_net_patttern_htmltopdf_Wrapper_convertRemote
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setObjectSettings
   (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     net_patttern_htmltopdf_Wrapper
+ * Method:    convert
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_net_patttern_htmltopdf_Wrapper_convert
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }

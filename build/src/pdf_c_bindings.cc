@@ -2,7 +2,6 @@
 #include "utilities.hh"
 #include <QApplication>
 #include <QWebFrame>
-
 #include <QHash>
 
 /**

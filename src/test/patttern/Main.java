@@ -16,14 +16,24 @@ public class Main {
       String destLocalResult = currPath + "/result/out/test_local.pdf";
       String sourceRemoteHtml = "http://doc.qt.io/qt-5/qfileinfo.html";
       String destRemoteResult = currPath + "/result/out/test_remote.pdf";
-      wrapper.init(false);
+
+      // Init wrapper
+      wrapper.init(true);
+
+      // Long local converter
       wrapper.setSource(sourceLocalHtml);
       wrapper.setDestination(destLocalResult);
-//      wrapper.setSource(sourceRemoteHtml);
-//      wrapper.setDestination(destRemoteResult);
 //      wrapper.setObjectSettings("page", sourceLocalHtml);
 //      wrapper.setGlobalSettings("out", destLocalResult);
       wrapper.convert();
+
+      // Long local converter
+      wrapper.setSource(sourceRemoteHtml);
+      wrapper.setDestination(destRemoteResult);
+      wrapper.convert();
+
+      // Release wrapper
+      wrapper.release();
     } catch (Exception e) {
       e.printStackTrace();
     }

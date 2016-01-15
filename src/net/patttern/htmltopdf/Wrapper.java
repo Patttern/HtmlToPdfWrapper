@@ -3,11 +3,6 @@ package net.patttern.htmltopdf;
 /**
  * Created by pattern on 22.12.15.
  * Commands:
- * javac -d ~/work/HtmlToPdfWrapper/build/HtmlToPdfWrapper src/net/patttern/htmltopdf/Wrapper.java
- * cd ~/work/HtmlToPdfWrapper/build/HtmlToPdfWrapper
- * javah net.patttern.htmltopdf.Wrapper
- * cd ~/work/HtmlToPdfWrapper
- *
  * javac -d ~/work/HtmlToPdfWrapper/build/src src/net/patttern/htmltopdf/Wrapper.java
  * cd ~/work/HtmlToPdfWrapper/build/src
  * javah net.patttern.htmltopdf.Wrapper
@@ -24,4 +19,5 @@ public class Wrapper {
   public native static void setGlobalSettings(String name, String value);
   public native static void setObjectSettings(String name, String value);
   public native static int convert();
+  public native static void release();
 }

@@ -1,4 +1,5 @@
 #include "websettings.hh"
+
 namespace wkhtmltopdf {
   namespace settings {
     Web::Web() :

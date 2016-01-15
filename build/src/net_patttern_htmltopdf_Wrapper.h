@@ -55,6 +55,14 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setObjectSettings
 JNIEXPORT jint JNICALL Java_net_patttern_htmltopdf_Wrapper_convert
   (JNIEnv *, jclass);
 
+/*
+ * Class:     net_patttern_htmltopdf_Wrapper
+ * Method:    release
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_release
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

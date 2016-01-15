@@ -1,0 +1,21 @@
+#!/bin/sh
+
+CURRDIR=$PWD
+BUILDDIR=${CURRDIR}/build
+
+# Вывод разделительной строки
+_line () {
+  printf %50s | tr ' ' '='
+  echo
+}
+
+_line
+echo "Компиляция JAVA класса..."
+_line
+cd ${CURRDIR}
+echo ">>> " javac -d ${BUILDDIR}/src ${CURRDIR}/src/net/patttern/htmltopdf/Wrapper.java
+javac -verbose -d ${BUILDDIR}/src ${CURRDIR}/src/net/patttern/htmltopdf/Wrapper.java
+cd ${BUILDDIR}/src
+# Создаем заголовочный h-файл Wrapper-а для С++
+echo ">>> " javah net.patttern.htmltopdf.Wrapper
+javah -verbose net.patttern.htmltopdf.Wrapper

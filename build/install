@@ -122,27 +122,24 @@ _preinstall () {
 
 # Сборка библиотеки
 _build () {
-  _line
-  echo "Сборка библиотеки..."
-  _line
-
   # Определяем JAVA_HOME
   JAVAHOMEPATH=`echo $JAVA_HOME`
   if [ "${JAVAHOMEPATH}0" = "0" ]; then
     export JAVA_HOME="$(update-alternatives --query java | grep 'Value: ' | grep -o '/.*/jre' | sed 's/\/jre//')"
   fi
 
-  # Компилируем Wrapper
-  javac -d ${CURRDIR}/src ${ROOTDIR}/src/net/patttern/htmltopdf/Wrapper.java
-  cd ${CURRDIR}/src
-  # Создаем заголовочный h-файл Wrapper-а для С++
-  javah net.patttern.htmltopdf.Wrapper
-  cd ${BUILDDIR}
+  # Компилируем Java класс
+  cd ${ROOTDIR}
+  ./compile
 
-  # Компилируем библиотеку
+  _line
+  echo "Сборка библиотеки..."
+  _line
+  cd ${BUILDDIR}
   QMAKE_EXEC=`which qmake`
-#  ${QMAKE_EXEC} -spec linux-g++ -o Makefile ${PROJECT_FILE}
+  echo ">>> " ${QMAKE_EXEC} ${PROJECT_FILE} -r -spec linux-g++
   ${QMAKE_EXEC} ${PROJECT_FILE} -r -spec linux-g++
+  echo ">>> " make clean install
   make clean install
 }
 
@@ -170,6 +167,7 @@ _package_deb () {
   cp ${CURRDIR}/../LICENSE ${DEBIANDIR}/copyright
 
   cd ${CURRDIR}
+  echo ">>> " fakeroot dpkg-deb --build ${PKGNAME}
   fakeroot dpkg-deb --build ${PKGNAME}
   mv ${PKGNAME}.deb ${PACKAGES}/${PKGNAME}_${PKGRELEASE}-${PKGDATEBUILD}_${PKGARCH}.deb
 
@@ -185,6 +183,7 @@ _package_rpm () {
   _line
 
   cd ${PACKAGES}
+  echo ">>> " fakeroot alien -k -r ${PKGNAME}_${PKGRELEASE}-${PKGDATEBUILD}_${PKGARCH}.deb
   fakeroot alien -k -r ${PKGNAME}_${PKGRELEASE}-${PKGDATEBUILD}_${PKGARCH}.deb
 }
 

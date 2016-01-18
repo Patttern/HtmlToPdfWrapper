@@ -2,5 +2,4 @@
 out/**
 result/out/**
 build/build/**
-HtmlToPdfWrapper.iml
 *.log

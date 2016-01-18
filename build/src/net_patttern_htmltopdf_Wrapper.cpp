@@ -73,7 +73,21 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setGlobalSettings (JN
     qDebug() << "setGlobalSettings [name][value]: [" << name << "][" << value << "]";
   }
 
-  wkhtmltopdf_set_global_setting(gs, name, value);
+  QStringList gsNames;
+  gsNames << "dumpOutline" << "load.cookieJar";
+
+  switch (gsNames.contains(name)) {
+    case 0:
+    case 1: {
+        QString path = QString::fromUtf8(value);
+        wkhtmltopdf_set_global_setting(gs, name, path.toStdString().c_str());
+      }
+      break;
+    default: {
+        wkhtmltopdf_set_global_setting(gs, name, value);
+      }
+      break;
+  }
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setObjectSettings (JNIEnv * jni, jclass jclass, jstring jname, jstring jvalue) {
@@ -84,7 +98,23 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setObjectSettings (JN
     qDebug() << "setObjectSettings [name][value]: [" << name << "][" << value << "]";
   }
 
-  wkhtmltopdf_set_object_setting(os, name, value);
+  QStringList osNames;
+  osNames << "header.htmlUrl" << "footer.htmlUrl" << "web.userStyleSheet" << "tocXsl";
+
+  switch (osNames.contains(name)) {
+    case 0:
+    case 1:
+    case 2:
+    case 3: {
+        QString path = QString::fromUtf8(value);
+        wkhtmltopdf_set_object_setting(os, name, path.toStdString().c_str());
+      }
+      break;
+    default: {
+        wkhtmltopdf_set_object_setting(os, name, value);
+      }
+      break;
+  }
 }
 
 JNIEXPORT jint JNICALL Java_net_patttern_htmltopdf_Wrapper_convert (JNIEnv * jni, jclass jclass) {

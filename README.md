@@ -21,15 +21,15 @@ Convert HTML to PDF using Webkit (QtWebKit)<br>
 #### SO библиотека
 
 Для установки достаточно разместить собранный wrapper в переменной окружения системы, где распалагаются все библиотеки. Обычно это диретория _/usr/lib_.
-Основным является файл вида _libHtmlToPdfWrapper.so.1.0.0_ (в зависимости от версии сборки), остальные файлы являются симлинками на этот файл.
+Основным является файл вида _libHtmlToPdfWrapper.so.1.0.1_ (в зависимости от версии сборки), остальные файлы являются симлинками на этот файл.
 Поэтому, после копирования wrapper-а, требуется так же создать симлинки со смещением расширения до _.so_:
 
 ```bash
-$ sudo cp build/libs/libHtmlToPdfWrapper.so.1.0.0 /usr/lib
+$ sudo cp build/libs/1.0.1/libHtmlToPdfWrapper.so.1.0.1 /usr/lib
 $ cd /usr/lib
-$ sudo ln -s libHtmlToPdfWrapper.so.1.0.0 libHtmlToPdfWrapper.so.1.0
-$ sudo ln -s libHtmlToPdfWrapper.so.1.0.0 libHtmlToPdfWrapper.so.1
-$ sudo ln -s libHtmlToPdfWrapper.so.1.0.0 libHtmlToPdfWrapper.so
+$ sudo ln -s libHtmlToPdfWrapper.so.1.0.1 libHtmlToPdfWrapper.so.1.0
+$ sudo ln -s libHtmlToPdfWrapper.so.1.0.1 libHtmlToPdfWrapper.so.1
+$ sudo ln -s libHtmlToPdfWrapper.so.1.0.1 libHtmlToPdfWrapper.so
 ```
 
 #### Debian пакет
@@ -37,7 +37,7 @@ $ sudo ln -s libHtmlToPdfWrapper.so.1.0.0 libHtmlToPdfWrapper.so
 Если у вас установлен linux семейства Debian, вам достатчоно установить готовый Debian-пакет:
 
 ```bash
-$ sudo dpkg i build/packages/libhtmltopdfwrapper_1.0.0-20160118_amd64.deb
+$ sudo dpkg i build/packages/libhtmltopdfwrapper_1.0.1-20160119_amd64.deb
 ```
 
 #### RedHat пакет
@@ -45,7 +45,7 @@ $ sudo dpkg i build/packages/libhtmltopdfwrapper_1.0.0-20160118_amd64.deb
 Если у вас установлен linux семейства RedHat, вам достатчоно установить готовый RPM-пакет:
 
 ```bash
-$ sudo dpkg i build/packages/libhtmltopdfwrapper-1.0.0-20160118.x86_64.rpm
+$ sudo dpkg i build/packages/libhtmltopdfwrapper-1.0.1-20160119.x86_64.rpm
 ```
 
 ## Использование
@@ -105,7 +105,19 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_hello (JNIEnv * jni, 
 ```
 
 После того, как все функции описаны, требуется собрать wrapper. Это производится из диретории _build_ с помощью скрипта _install_. Так же, этот скрипт
-используется для полной перекомпиляции wrapper-а, если вы желаете его создать на собственной системе, даже если никаких изменений не производилось:
+используется для полной перекомпиляции wrapper-а, если вы желаете его создать на собственной системе, даже если никаких изменений не производилось.
+При каждой сборке BUILD-версия wrapper-а инкрементируется на 1. MAJOR и MINOR версии wrapper-а устанавливаются в скрипте _install_ (9-14 строки):
+
+```bash
+#==================================================
+# MAJOR и MINOR версии библиотеки
+#==================================================
+
+PKGMAJOR=1
+PKGMINOR=0
+```
+
+Если вы желаете изменить версию, требуется выставить нужную версию в соответсвующих параметрах. После этого требутся запустить компиляю: 
 
 ```bash
 $ cd build

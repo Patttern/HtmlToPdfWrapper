@@ -14,6 +14,16 @@
 #   libqt5xmlpatterns5-dev
 #   libqt5printsupport5
 
+VERSION_MAJOR = 1
+VERSION_MINOR = 0
+VERSION_BUILD = 1
+
+DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
+       "VERSION_MINOR=$$VERSION_MINOR"\
+       "VERSION_BUILD=$$VERSION_BUILD"
+
+VERSION = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
+
 QT       += network svg webkitwidgets xmlpatterns
 QT       -= gui
 
@@ -36,6 +46,6 @@ HEADERS += $$PWD/src/*.h \
   $$PWD/src/*.hh
 
 unix {
-  target.path = $$PWD/libs
+  target.path = $$PWD/libs/$$VERSION
   INSTALLS += target
 }

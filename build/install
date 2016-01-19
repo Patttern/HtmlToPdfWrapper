@@ -7,16 +7,22 @@
 DEBUG=0
 
 #==================================================
+# MAJOR и MINOR версии библиотеки
+#==================================================
+
+PKGMAJOR=1
+PKGMINOR=0
+
+#==================================================
 # Конфигурация
 #==================================================
 
 MAINTAINER='Egor Babenko <patttern@gmail.com>'
 PKGNAME='libhtmltopdfwrapper'
 PKGDATEBUILD=`date +%Y%m%d`
-PKGMAJOR='1'
-PKGMINOR='0'
-PKGBUILD='0'
-PKGRELEASE="${PKGMAJOR}.${PKGMINOR}.${PKGBUILD}"
+PRJMAJOR_LABEL='VERSION_MAJOR'
+PRJMINOR_LABEL='VERSION_MINOR'
+PRJBUILD_LABEL='VERSION_BUILD'
 PKGARCH='amd64'
 LIBNAME='libHtmlToPdfWrapper'
 
@@ -120,8 +126,44 @@ _preinstall () {
   mkdir -p ${BUILDDIR} ${LIBS} ${PACKAGES}
 }
 
+# Проверка и установка версии библиотеки
+_check_version () {
+  RESETBUILD=0
+
+  PRJMAJOR_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJMAJOR_LABEL}/ {print}"`
+  PRJMAJOR=`echo ${PRJMAJOR_STRING} | awk '{print($3)}'`
+  if [ "$PRJMAJOR" != "$PKGMAJOR" ]; then
+    sed -i "s/${PRJMAJOR_STRING}/${PRJMAJOR_LABEL} = ${PKGMAJOR}/" ${PROJECT_FILE}
+    RESETBUILD=1
+  fi
+
+  PRJMINOR_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJMINOR_LABEL}/ {print}"`
+  PRJMINOR=`echo ${PRJMINOR_STRING} | awk '{print($3)}'`
+  if [ "$PRJMINOR" != "$PKGMINOR" ]; then
+    sed -i "s/${PRJMINOR_STRING}/${PRJMINOR_LABEL} = ${PKGMINOR}/" ${PROJECT_FILE}
+    RESETBUILD=1
+  fi
+
+  PRJBUILD_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJBUILD_LABEL}/ {print}"`
+  # Если изменилась MAJOR или MINOR версия библиотеки ...
+  if [ "${RESETBUILD}" = "1" ]; then
+    # ... сбрасываем BUILD версию до 0
+    PKGBUILD=0
+  # Иначе ...
+  else
+    # ... инкремент BUILD версии на 1
+    PRJBUILD=`echo ${PRJBUILD_STRING} | awk '{print($3)}'`
+    PKGBUILD=`expr $PRJBUILD + 1`
+  fi
+  sed -i "s/${PRJBUILD_STRING}/${PRJBUILD_LABEL} = ${PKGBUILD}/" ${PROJECT_FILE}
+
+  PKGRELEASE="${PKGMAJOR}.${PKGMINOR}.${PKGBUILD}"
+}
+
 # Сборка библиотеки
 _build () {
+  _check_version
+
   # Определяем JAVA_HOME
   JAVAHOMEPATH=`echo $JAVA_HOME`
   if [ "${JAVAHOMEPATH}0" = "0" ]; then
@@ -155,7 +197,7 @@ _package_deb () {
 
   echo ${CONTENT} > ${DEBIANDIR}/control
 
-  cp ${LIBS}/${LIBNAME}.so.${PKGRELEASE} ${TARGETDIR}
+  cp ${LIBS}/${PKGRELEASE}/${LIBNAME}.so.${PKGRELEASE} ${TARGETDIR}
   cd ${TARGETDIR}
   ln -s ${LIBNAME}.so.${PKGRELEASE} ${LIBNAME}.so.${PKGMAJOR}.${PKGMINOR}
   ln -s ${LIBNAME}.so.${PKGRELEASE} ${LIBNAME}.so.${PKGMAJOR}

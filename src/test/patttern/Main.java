@@ -23,6 +23,10 @@ public class Main {
       String sourceRemoteHtml = "http://doc.qt.io/qt-5/qfileinfo.html";
       String destRemoteResult = currPath + "/result/out/test_remote.pdf";
 
+      // Выводим текущую версию wrapper-а
+      String version = wrapper.getVersion();
+      System.out.println("Текущая версия wrapper-а: " + version);
+
       // Init wrapper
       // Параметр функции указывает включать или не включать отладочный режим:
       // true - отладочный режим включен

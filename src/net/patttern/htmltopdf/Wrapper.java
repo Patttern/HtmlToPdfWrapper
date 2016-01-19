@@ -13,6 +13,7 @@ public class Wrapper {
     System.loadLibrary("HtmlToPdfWrapper");
   }
 
+  public native static String getVersion();
   public native static void init(boolean debug);
   public native static void setSource(String value);
   public native static void setDestination(String value);

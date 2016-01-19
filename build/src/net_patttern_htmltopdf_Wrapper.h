@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     net_patttern_htmltopdf_Wrapper
+ * Method:    getVersion
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_getVersion
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     net_patttern_htmltopdf_Wrapper
  * Method:    init
  * Signature: (Z)V
  */

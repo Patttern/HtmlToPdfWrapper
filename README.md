@@ -66,7 +66,7 @@ Java-проект построен с помощью IDE [JetBrains IntelliJ Ide
 Для добавления новой функции, ее требуется сначала описать в классе _net.patttern.htmltopdf.Wrapper_.
 
 ```java
-  public native static void hello(String param);
+  public native static String hello(String param);
 ```
 
 После того, как все функции вызова из Java описаны, требуется произвести компиляю header-файла для C++. Для этого достаточно вызвать скрипт compile,
@@ -88,19 +88,28 @@ _build/src/net_patttern_htmltopdf_Wrapper.cpp_. В данном примере, 
 /*
  * Class:     net_patttern_htmltopdf_Wrapper
  * Method:    hello
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_hello
+JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_hello
   (JNIEnv *, jclass, jstring);
 ```
 
-Напишем обработчик функции, которая будет просто выводить входящий параметр.
+Напишем обработчик функции, которая будет возвращать строку "Hello " + входящий параметр.
 
 ```C++
-JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_hello (JNIEnv * jni, jclass jclass, jstring jname) {
-  // cast-инг из 'jstring' в 'const char *' 
-  const char * name = jni->GetStringUTFChars(jname, 0);
-  qDebug() << name;
+JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_hello (JNIEnv * jni, jclass jclass, jstring jname) {
+  // cast-инг из 'jstring' в 'const char *'
+  const char * name = jni->GetStringUTFChars(jname, NULL);
+  char msg[60] = "Hello ";
+  jstring result;
+
+  strcat(msg, name);
+  // уничтожаем jname и name, больше они нам не требуются
+  jni->ReleaseStringUTFChars(jname, name);
+  puts(msg);
+  // cast-инг из 'const char *' в 'jstring'
+  result = jni->NewStringUTF(msg);
+  return result;
 }
 ```
 

@@ -94,21 +94,19 @@ JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_hello
   (JNIEnv *, jclass, jstring);
 ```
 
-Напишем обработчик функции, которая будет возвращать строку "Hello " + входящий параметр.
+Напишем обработчик функции, которая будет возвращать строку "Hello, " + входящий параметр.
 
 ```C++
 JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_hello (JNIEnv * jni, jclass jclass, jstring jname) {
   // cast-инг из 'jstring' в 'const char *'
   const char * name = jni->GetStringUTFChars(jname, NULL);
-  char msg[60] = "Hello ";
-  jstring result;
+  QString message = "Hello, " + QString::fromUtf8(name);
 
-  strcat(msg, name);
   // уничтожаем jname и name, больше они нам не требуются
   jni->ReleaseStringUTFChars(jname, name);
-  puts(msg);
+
   // cast-инг из 'const char *' в 'jstring'
-  result = jni->NewStringUTF(msg);
+  result = jni->NewStringUTF(message);
   return result;
 }
 ```

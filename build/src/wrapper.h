@@ -9,6 +9,36 @@ wkhtmltopdf_object_settings * os;
 wkhtmltopdf_converter * conv;
 bool debugMode = false;
 
+void reinit_settings() {
+//  if (gs) {
+//    if (debugMode) {
+//      qDebug() << "Global settings already initialized: [" << gs << "]";
+//    }
+//  }
+  gs = wkhtmltopdf_create_global_settings();
+  if (debugMode) {
+    qDebug() << "Global settings reinitialized: [" << gs << "]";
+  }
+
+//  if (os) {
+//    if (debugMode) {
+//      qDebug() << "Object settings already initialized: [" << os << "]";
+//    }
+//  }
+  os = wkhtmltopdf_create_object_settings();
+  if (debugMode) {
+    qDebug() << "Object settings reinitialized: [" << os << "]";
+  }
+
+  if (debugMode) {
+    qDebug() << "Set global settings [name][value]: [ 'load.cookieJar' ][ '/tmp/myjar.jar' ]";
+  }
+  int res = wkhtmltopdf_set_global_setting(gs, "load.cookieJar", "/tmp/myjar.jar");
+  if (debugMode) {
+    qDebug() << "Set 'load.cookieJar' result: [" << res << "]";
+  }
+}
+
 void progress_changed(wkhtmltopdf_converter * c, int p) {
   if (debugMode) {
     printf("%3d%%\n",p);

@@ -24,6 +24,7 @@ public class Main {
       String destRemoteResult = currPath + "/result/out/test_remote.pdf";
 
       // Выводим текущую версию wrapper-а
+      // Метод можно вызвать в любой момент
       String version = wrapper.getVersion();
       System.out.println("Текущая версия wrapper-а: " + version);
 
@@ -31,33 +32,49 @@ public class Main {
       // Параметр функции указывает включать или не включать отладочный режим:
       // true - отладочный режим включен
       // false - отладочный режим выключен
-      wrapper.init(false);
+      wrapper.init(true);
 
-      // Конвертация локально сохраненного файла
+      /*
+       * Конвертация локального файла
+       */
+      // Сброс настроек
+      // После вызова wrapper.init(), сброс настроек вызывать не требуется, но ошибкой не будет.
+      wrapper.resetSettings();
+      // Назначаем файлы источника и назначения
       wrapper.setSource(sourceLocalHtml);
       wrapper.setDestination(destLocalResult);
+      // Вызов процесса конвертации
       wrapper.convert();
 
-      // Конвертация файла через указание URL
-      wrapper.setSource(sourceRemoteHtml);
-      wrapper.setDestination(destRemoteResult);
-      wrapper.convert();
-
-      // Установка дополнительных параметров.
-      // ВАЖНО! Установленные параметры будут действовать для всех последующих конвертаций.
-      // Поэтому если требуется сбросить уже назначенные вами парамтеры,
-      // требуется пересоздать или создать новый объект на Wrapper.
+      /*
+       * Конвертация файла с параметрами
+       */
+      // Сброс настроек
+      wrapper.resetSettings();
+      // Назначаем файлы источника и назначения
       wrapper.setSource(sourceLocalHtml);
       wrapper.setDestination(destLocalWithParamResult);
-
-      ObjectSettings os = new ObjectSettings();
-      os.setPagesCount(wrapper, true);
-
+      // Назначаем глобальные параметры
       GlobalSettings gs = new GlobalSettings();
       gs.setColorMode(wrapper, "Grayscale");
-
+      // Назначаем параметры для PDF файла
+      ObjectSettings os = new ObjectSettings();
+      os.setPagesCount(wrapper, true);
+      // Вызов процесса конвертации
       wrapper.convert();
 
+      /*
+       * Конвертация файла через указание URL
+       */
+      // Сброс настроек
+      wrapper.resetSettings();
+      // Назначаем файлы источника и назначения
+      wrapper.setSource(sourceRemoteHtml);
+      wrapper.setDestination(destRemoteResult);
+      // Вызов процесса конвертации
+      wrapper.convert();
+
+      // Завершение работы с wrapper-ом
       // Уничтожаем все созданные объекты
       wrapper.release();
     } catch (Exception e) {

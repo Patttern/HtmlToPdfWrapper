@@ -19,6 +19,7 @@ public class Wrapper {
   public native static void setDestination(String value);
   public native static void setGlobalSettings(String name, String value);
   public native static void setObjectSettings(String name, String value);
+  public native static void resetSettings();
   public native static int convert();
   public native static void release();
 }

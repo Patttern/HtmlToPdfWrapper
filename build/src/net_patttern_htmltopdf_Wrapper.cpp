@@ -6,10 +6,9 @@
 #include <QDebug>
 
 JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_getVersion (JNIEnv * jni, jclass jclass) {
-  QString qversion = QString("%1.%2.%3").arg(VERSION_MAJOR).arg(VERSION_MINOR).arg(VERSION_BUILD);
-  const char * version = qversion.toStdString().c_str();
+  QString version = QString("%1.%2.%3").arg(VERSION_MAJOR).arg(VERSION_MINOR).arg(VERSION_BUILD);
 
-  return jni->NewStringUTF(version);
+  return jni->NewStringUTF(version.toStdString().c_str());
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_init (JNIEnv * jni, jclass jclass, jboolean jb) {
@@ -23,55 +22,33 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_init (JNIEnv * jni, j
   }
   wkhtmltopdf_init(false);
 
-  if (!gs) {
-    if (debugMode) {
-      qDebug() << "Init Global settings.";
-    }
-    gs = wkhtmltopdf_create_global_settings();
-  } else {
-    if (debugMode) {
-      qDebug() << "Global settings already initialized [" << gs << "].";
-    }
-  }
-
-  if (!os) {
-    if (debugMode) {
-      qDebug() << "Init Object settings.";
-    }
-    os = wkhtmltopdf_create_object_settings();
-  } else {
-    if (debugMode) {
-      qDebug() << "Object settings already initialized [" << os << "].";
-    }
-  }
-
-  QString jarPath = QString::fromUtf8("/tmp/myjar.jar");
-  if (debugMode) {
-    qDebug() << "Path to 'load.cookieJar':" << jarPath;
-  }
-  wkhtmltopdf_set_global_setting(gs, "load.cookieJar", jarPath.toStdString().c_str());
+  reinit_settings();
 }
 
-JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setSource (JNIEnv * jni, jclass jclass, jstring jvalue) {
-  const char * value = jni->GetStringUTFChars(jvalue, 0);
-  QString sourcePath = QString::fromUtf8(value);
-  jni->ReleaseStringUTFChars(jvalue, value);
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setSource (JNIEnv * jni, jclass jclass, jstring jsrc) {
+  QString source = QString::fromUtf8(jni->GetStringUTFChars(jsrc, NULL));
+  jni->ReleaseStringUTFChars(jsrc, NULL);
   if (debugMode) {
-    qDebug() << "setSource [sourcePath]: [" << sourcePath << "]";
+    qDebug() << "Set source: [" << source << "]";
   }
 
-  wkhtmltopdf_set_object_setting(os, "page", sourcePath.toStdString().c_str());
+  int res = wkhtmltopdf_set_object_setting(os, "page", source.toStdString().c_str());
+  if (debugMode) {
+    qDebug() << "Result set source: [" << res << "]";
+  }
 }
 
-JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setDestination (JNIEnv * jni, jclass jclass, jstring jvalue) {
-  const char * value = jni->GetStringUTFChars(jvalue, 0);
-  QString destPath = QString::fromUtf8(value);
-  jni->ReleaseStringUTFChars(jvalue, value);
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setDestination (JNIEnv * jni, jclass jclass, jstring jdest) {
+  QString dest = QString::fromUtf8(jni->GetStringUTFChars(jdest, NULL));
+  jni->ReleaseStringUTFChars(jdest, NULL);
   if (debugMode) {
-    qDebug() << "setDestination [destPath]: [" << destPath << "]";
+    qDebug() << "Set destination: [" << dest << "]";
   }
 
-  wkhtmltopdf_set_global_setting(gs, "out", destPath.toStdString().c_str());
+  int res = wkhtmltopdf_set_global_setting(gs, "out", dest.toStdString().c_str());
+  if (debugMode) {
+    qDebug() << "Result set destination: [" << res << "]";
+  }
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setGlobalSettings (JNIEnv * jni, jclass jclass, jstring jname, jstring jvalue) {
@@ -80,10 +57,13 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setGlobalSettings (JN
   jni->ReleaseStringUTFChars(jname, NULL);
   jni->ReleaseStringUTFChars(jvalue, NULL);
   if (debugMode) {
-    qDebug() << "setGlobalSettings [name][value]: [" << name << "][" << value << "]";
+    qDebug() << "Set global settings [name][value]: [" << name << "][" << value << "]";
   }
 
-  wkhtmltopdf_set_global_setting(gs, name.toStdString().c_str(), value.toStdString().c_str());
+  int res = wkhtmltopdf_set_global_setting(gs, name.toStdString().c_str(), value.toStdString().c_str());
+  if (debugMode) {
+    qDebug() << "Result global settings: [" << res << "]";
+  }
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setObjectSettings (JNIEnv * jni, jclass jclass, jstring jname, jstring jvalue) {
@@ -92,10 +72,17 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setObjectSettings (JN
   jni->ReleaseStringUTFChars(jname, NULL);
   jni->ReleaseStringUTFChars(jvalue, NULL);
   if (debugMode) {
-    qDebug() << "setObjectSettings [name][value]: [" << name << "][" << value << "]";
+    qDebug() << "Set object settings [name][value]: [" << name << "][" << value << "]";
   }
 
-  wkhtmltopdf_set_object_setting(os, name.toStdString().c_str(), value.toStdString().c_str());
+  int res = wkhtmltopdf_set_object_setting(os, name.toStdString().c_str(), value.toStdString().c_str());
+  if (debugMode) {
+    qDebug() << "Result object settings: [" << res << "]";
+  }
+}
+
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_resetSettings (JNIEnv * jni, jclass jclass) {
+  reinit_settings();
 }
 
 JNIEXPORT jint JNICALL Java_net_patttern_htmltopdf_Wrapper_convert (JNIEnv * jni, jclass jclass) {

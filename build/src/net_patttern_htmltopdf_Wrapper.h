@@ -57,6 +57,14 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setObjectSettings
 
 /*
  * Class:     net_patttern_htmltopdf_Wrapper
+ * Method:    resetSettings
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_resetSettings
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     net_patttern_htmltopdf_Wrapper
  * Method:    convert
  * Signature: ()I
  */

@@ -2,7 +2,9 @@
 #define __WRAPPER_H__
 
 #include "htmltopdfwrapper_global.h"
+#include "pdfsettings.hh"
 #include "pdf_c_bindings_p.hh"
+#include <QFile>
 
 wkhtmltopdf_global_settings * gs;
 wkhtmltopdf_object_settings * os;
@@ -10,32 +12,27 @@ wkhtmltopdf_converter * conv;
 bool debugMode = false;
 
 void reinit_settings() {
-//  if (gs) {
-//    if (debugMode) {
-//      qDebug() << "Global settings already initialized: [" << gs << "]";
-//    }
-//  }
   gs = wkhtmltopdf_create_global_settings();
   if (debugMode) {
     qDebug() << "Global settings reinitialized: [" << gs << "]";
   }
 
-//  if (os) {
-//    if (debugMode) {
-//      qDebug() << "Object settings already initialized: [" << os << "]";
-//    }
-//  }
   os = wkhtmltopdf_create_object_settings();
   if (debugMode) {
     qDebug() << "Object settings reinitialized: [" << os << "]";
   }
 
+  const char * name = "load.cookieJar";
+//  QString name = QString::fromUtf8("/tmp/myjar.jar");
+//  QString value = "/tmp/pdfCookieJar.jar";
+  QFile file;
+  file.setFileName("/tmp/pdfCookieJar.jar");
+  file.open(QIODevice::WriteOnly | QIODevice::Text);
+  file.close();
+//  wkhtmltopdf_set_global_setting(gs, "load.cookieJar", file.fileName().toStdString().c_str());
+  wkhtmltopdf_set_global_setting(gs, name, file.fileName().toStdString().c_str());
   if (debugMode) {
-    qDebug() << "Set global settings [name][value]: [ 'load.cookieJar' ][ '/tmp/myjar.jar' ]";
-  }
-  int res = wkhtmltopdf_set_global_setting(gs, "load.cookieJar", "/tmp/myjar.jar");
-  if (debugMode) {
-    qDebug() << "Set 'load.cookieJar' result: [" << res << "]";
+    qDebug() << "Path to 'load.cookieJar': [" << file.fileName() << "][" << file.exists() << "]";
   }
 }
 

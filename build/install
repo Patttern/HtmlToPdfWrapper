@@ -5,6 +5,7 @@
 #==================================================
 
 DEBUG=0
+FIXBUILD=1
 
 #==================================================
 # MAJOR и MINOR версии библиотеки
@@ -128,34 +129,41 @@ _preinstall () {
 
 # Проверка и установка версии библиотеки
 _check_version () {
-  RESETBUILD=0
-
-  PRJMAJOR_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJMAJOR_LABEL}/ {print}"`
-  PRJMAJOR=`echo ${PRJMAJOR_STRING} | awk '{print($3)}'`
-  if [ "$PRJMAJOR" != "$PKGMAJOR" ]; then
-    sed -i "s/${PRJMAJOR_STRING}/${PRJMAJOR_LABEL} = ${PKGMAJOR}/" ${PROJECT_FILE}
-    RESETBUILD=1
-  fi
-
-  PRJMINOR_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJMINOR_LABEL}/ {print}"`
-  PRJMINOR=`echo ${PRJMINOR_STRING} | awk '{print($3)}'`
-  if [ "$PRJMINOR" != "$PKGMINOR" ]; then
-    sed -i "s/${PRJMINOR_STRING}/${PRJMINOR_LABEL} = ${PKGMINOR}/" ${PROJECT_FILE}
-    RESETBUILD=1
-  fi
-
   PRJBUILD_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJBUILD_LABEL}/ {print}"`
-  # Если изменилась MAJOR или MINOR версия библиотеки ...
-  if [ "${RESETBUILD}" = "1" ]; then
-    # ... сбрасываем BUILD версию до 0
-    PKGBUILD=0
-  # Иначе ...
+
+  if [ "$FIXBUILD" = "1" ]; then
+    PKGBUILD=`echo ${PRJBUILD_STRING} | awk '{print($3)}'`
   else
-    # ... инкремент BUILD версии на 1
-    PRJBUILD=`echo ${PRJBUILD_STRING} | awk '{print($3)}'`
-    PKGBUILD=`expr $PRJBUILD + 1`
+    RESETBUILD=0
+
+    # Проверка MAJOR версии
+    PRJMAJOR_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJMAJOR_LABEL}/ {print}"`
+    PRJMAJOR=`echo ${PRJMAJOR_STRING} | awk '{print($3)}'`
+    if [ "$PRJMAJOR" != "$PKGMAJOR" ]; then
+      sed -i "s/${PRJMAJOR_STRING}/${PRJMAJOR_LABEL} = ${PKGMAJOR}/" ${PROJECT_FILE}
+      RESETBUILD=1
+    fi
+
+    # Проверка MINOR версии
+    PRJMINOR_STRING=`cat ${PROJECT_FILE} | awk "/^${PRJMINOR_LABEL}/ {print}"`
+    PRJMINOR=`echo ${PRJMINOR_STRING} | awk '{print($3)}'`
+    if [ "$PRJMINOR" != "$PKGMINOR" ]; then
+      sed -i "s/${PRJMINOR_STRING}/${PRJMINOR_LABEL} = ${PKGMINOR}/" ${PROJECT_FILE}
+      RESETBUILD=1
+    fi
+
+    # Если изменилась MAJOR или MINOR версия библиотеки ...
+    if [ "${RESETBUILD}" = "1" ]; then
+      # ... сбрасываем BUILD версию до 0
+      PKGBUILD=0
+    # Иначе ...
+    else
+      # ... инкремент BUILD версии на 1
+      PRJBUILD=`echo ${PRJBUILD_STRING} | awk '{print($3)}'`
+      PKGBUILD=`expr $PRJBUILD + 1`
+    fi
+    sed -i "s/${PRJBUILD_STRING}/${PRJBUILD_LABEL} = ${PKGBUILD}/" ${PROJECT_FILE}
   fi
-  sed -i "s/${PRJBUILD_STRING}/${PRJBUILD_LABEL} = ${PKGBUILD}/" ${PROJECT_FILE}
 
   PKGRELEASE="${PKGMAJOR}.${PKGMINOR}.${PKGBUILD}"
 }

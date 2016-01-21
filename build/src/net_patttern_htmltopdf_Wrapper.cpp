@@ -22,11 +22,20 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_init (JNIEnv * jni, j
   }
   wkhtmltopdf_init(false);
 
-  reinit_settings();
+  gs = wkhtmltopdf_create_global_settings();
+  if (debugMode) {
+    qDebug() << "Global settings reinitialized: [" << gs << "]";
+  }
+
+  os = wkhtmltopdf_create_object_settings();
+  if (debugMode) {
+    qDebug() << "Object settings reinitialized: [" << os << "]";
+  }
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setSource (JNIEnv * jni, jclass jclass, jstring jsrc) {
   QString source = QString::fromUtf8(jni->GetStringUTFChars(jsrc, NULL));
+  jni->ReleaseStringUTFChars(jsrc, NULL);
   if (debugMode) {
     qDebug() << "Set source: [" << source << "]";
   }
@@ -35,12 +44,11 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setSource (JNIEnv * j
   if (debugMode) {
     qDebug() << "Result set source: [" << res << "]";
   }
-
-  jni->ReleaseStringUTFChars(jsrc, NULL);
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setDestination (JNIEnv * jni, jclass jclass, jstring jdest) {
   QString dest = QString::fromUtf8(jni->GetStringUTFChars(jdest, NULL));
+  jni->ReleaseStringUTFChars(jdest, NULL);
   if (debugMode) {
     qDebug() << "Set destination: [" << dest << "]";
   }
@@ -49,8 +57,6 @@ JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setDestination (JNIEn
   if (debugMode) {
     qDebug() << "Result set destination: [" << res << "]";
   }
-
-  jni->ReleaseStringUTFChars(jdest, NULL);
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_setGlobalSettings (JNIEnv * jni, jclass jclass, jstring jname, jstring jvalue) {
@@ -95,6 +101,11 @@ JNIEXPORT jint JNICALL Java_net_patttern_htmltopdf_Wrapper_convert (JNIEnv * jni
 }
 
 JNIEXPORT void JNICALL Java_net_patttern_htmltopdf_Wrapper_release (JNIEnv * jni, jclass jclass) {
+  if (debugMode) {
+    qDebug() << "Destroy converter.";
+  }
+  wkhtmltopdf_destroy_converter(conv);
+
   if (debugMode) {
     qDebug() << "Destroy global settings.";
   }

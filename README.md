@@ -24,7 +24,7 @@ Convert HTML to PDF using Webkit (QtWebKit)<br>
 Основным является файл вида _libHtmlToPdfWrapper.so.1.0.1_ (в зависимости от версии сборки), остальные файлы являются симлинками на этот файл.
 Поэтому, после копирования wrapper-а, требуется так же создать симлинки со смещением расширения до _.so_:
 
-```bash
+``` bash
 $ sudo cp build/libs/1.0.1/libHtmlToPdfWrapper.so.1.0.1 /usr/lib
 $ cd /usr/lib
 $ sudo ln -s libHtmlToPdfWrapper.so.1.0.1 libHtmlToPdfWrapper.so.1.0
@@ -36,7 +36,7 @@ $ sudo ln -s libHtmlToPdfWrapper.so.1.0.1 libHtmlToPdfWrapper.so
 
 Если у вас установлен linux семейства Debian, вам достатчоно установить готовый Debian-пакет:
 
-```bash
+``` bash
 $ sudo dpkg i build/packages/libhtmltopdfwrapper_1.0.1-20160119_amd64.deb
 ```
 
@@ -44,13 +44,81 @@ $ sudo dpkg i build/packages/libhtmltopdfwrapper_1.0.1-20160119_amd64.deb
 
 Если у вас установлен linux семейства RedHat, вам достатчоно установить готовый RPM-пакет:
 
-```bash
+``` bash
 $ sudo dpkg i build/packages/libhtmltopdfwrapper-1.0.1-20160119.x86_64.rpm
 ```
 
 ## Использование
 
-Подробное использование wrapper-а описано в Java-классе _test.patttern.Main_.
+``` java
+// Создаем Wrapper
+Wrapper wrapper = new Wrapper();
+
+// Определяем наименования файлов истоников и назначения
+String currPath = Paths.get(".").toAbsolutePath().normalize().toString();
+String sourceLocalHtml = currPath + "/result/sources/QFileInfo_Class.html";
+String destLocalResult = currPath + "/result/out/test_local.pdf";
+String destLocalWithParamResult = currPath + "/result/out/test_local_with_param.pdf";
+String sourceRemoteHtml = "http://patttern.blogspot.ru/2015/07/mariadb-nginx-php-fpm-centos-7-page5.html";
+String destRemoteResult = currPath + "/result/out/test_remote.pdf";
+
+// Выводим текущую версию wrapper-а
+// Метод можно вызвать в любой момент
+String version = wrapper.getVersion();
+System.out.println("Текущая версия wrapper-а: " + version);
+
+// Init wrapper
+// Параметр функции указывает включать или не включать отладочный режим:
+// true - отладочный режим включен
+// false - отладочный режим выключен
+wrapper.init(true);
+
+/*
+ * Конвертация локального файла
+ */
+// Сброс настроек
+// После вызова wrapper.init(), сброс настроек вызывать не требуется, но ошибкой не будет.
+wrapper.resetSettings();
+// Назначаем файлы источника и назначения
+wrapper.setSource(sourceLocalHtml);
+wrapper.setDestination(destLocalResult);
+// Вызов процесса конвертации
+wrapper.convert();
+
+/*
+ * Конвертация файла с параметрами
+ */
+// Сброс настроек
+wrapper.resetSettings();
+// Назначаем файлы источника и назначения
+wrapper.setSource(sourceLocalHtml);
+wrapper.setDestination(destLocalWithParamResult);
+// Назначаем глобальные параметры
+GlobalSettings gs = new GlobalSettings();
+gs.setColorMode(wrapper, "Grayscale");
+// Назначаем параметры для PDF файла
+ObjectSettings os = new ObjectSettings();
+os.setPagesCount(wrapper, true);
+// Вызов процесса конвертации
+wrapper.convert();
+
+/*
+ * Конвертация файла через указание URL
+ */
+// Сброс настроек
+wrapper.resetSettings();
+// Назначаем файлы источника и назначения
+wrapper.setSource(sourceRemoteHtml);
+wrapper.setDestination(destRemoteResult);
+// Вызов процесса конвертации
+wrapper.convert();
+
+// Завершение работы с wrapper-ом
+// Уничтожаем все созданные объекты
+wrapper.release();
+```
+
+Работу wrapper-а можно проверить в Java-классе _test.patttern.Main_.
 
 ## Разработка
 
@@ -65,14 +133,14 @@ $ sudo dpkg i build/packages/libhtmltopdfwrapper-1.0.1-20160119.x86_64.rpm
 Java-проект построен с помощью IDE [JetBrains IntelliJ Idea](https://www.jetbrains.com/idea/).
 Для добавления новой функции, ее требуется сначала описать в классе _net.patttern.htmltopdf.Wrapper_.
 
-```java
+``` java
   public native static String hello(String param);
 ```
 
 После того, как все функции вызова из Java описаны, требуется произвести компиляю header-файла для C++. Для этого достаточно вызвать скрипт compile,
 расположенный в корне проекта:
 
-```bash
+``` bash
 $ ./compile
 ```
 
@@ -84,7 +152,7 @@ C++-проект построен с помощью IDE [Qt Creator](http://www.
 После того, как был перегенерирован файл _build/src/net_patttern_htmltopdf_Wrapper.h_, требуется написать обработку для новых функций в файле
 _build/src/net_patttern_htmltopdf_Wrapper.cpp_. В данном примере, в файле _build/src/net_patttern_htmltopdf_Wrapper.h_ появится новая запись:
 
-```C++
+``` cpp
 /*
  * Class:     net_patttern_htmltopdf_Wrapper
  * Method:    hello
@@ -96,7 +164,7 @@ JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_hello
 
 Напишем обработчик функции, которая будет возвращать строку "Hello, " + входящий параметр.
 
-```C++
+``` cpp
 JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_hello (JNIEnv * jni, jclass jclass, jstring jname) {
   // cast-инг из 'jstring' в 'const char *'
   const char * name = jni->GetStringUTFChars(jname, NULL);
@@ -115,7 +183,7 @@ JNIEXPORT jstring JNICALL Java_net_patttern_htmltopdf_Wrapper_hello (JNIEnv * jn
 используется для полной перекомпиляции wrapper-а, если вы желаете его создать на собственной системе, даже если никаких изменений не производилось.
 При каждой сборке BUILD-версия wrapper-а инкрементируется на 1. MAJOR и MINOR версии wrapper-а устанавливаются в скрипте _install_ (9-14 строки):
 
-```bash
+``` bash
 #==================================================
 # MAJOR и MINOR версии библиотеки
 #==================================================
@@ -126,7 +194,7 @@ PKGMINOR=0
 
 Если вы желаете изменить версию, требуется выставить нужную версию в соответсвующих параметрах. После этого требутся запустить компиляю: 
 
-```bash
+``` bash
 $ cd build
 $ ./install
 ```

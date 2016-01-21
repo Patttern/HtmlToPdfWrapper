@@ -5,6 +5,7 @@
 #include "pdfsettings.hh"
 #include "pdf_c_bindings_p.hh"
 #include <QFile>
+#include <cstring>
 
 wkhtmltopdf_global_settings * gs;
 wkhtmltopdf_object_settings * os;
@@ -20,19 +21,6 @@ void reinit_settings() {
   os = wkhtmltopdf_create_object_settings();
   if (debugMode) {
     qDebug() << "Object settings reinitialized: [" << os << "]";
-  }
-
-  const char * name = "load.cookieJar";
-//  QString name = QString::fromUtf8("/tmp/myjar.jar");
-//  QString value = "/tmp/pdfCookieJar.jar";
-  QFile file;
-  file.setFileName("/tmp/pdfCookieJar.jar");
-  file.open(QIODevice::WriteOnly | QIODevice::Text);
-  file.close();
-//  wkhtmltopdf_set_global_setting(gs, "load.cookieJar", file.fileName().toStdString().c_str());
-  wkhtmltopdf_set_global_setting(gs, name, file.fileName().toStdString().c_str());
-  if (debugMode) {
-    qDebug() << "Path to 'load.cookieJar': [" << file.fileName() << "][" << file.exists() << "]";
   }
 }
 
@@ -63,10 +51,42 @@ void warning(wkhtmltopdf_converter * c, const char * msg) {
 }
 
 int run_convert () {
+/*
+  int l = 255;
+  const char * cjname = "load.cookieJar";
+  const char * pname = "page";
+  const char * oname = "out";
+  char *cjval = new char[l];
+  char *oval = new char[l];
+  char *pval = new char[l];
+  int cjres = wkhtmltopdf_get_global_setting(gs, cjname, cjval, l);
+  int pres = wkhtmltopdf_get_object_setting(os, pname, pval, l);
+  int ores = wkhtmltopdf_get_global_setting(gs, oname, oval, l);
   if (debugMode) {
-    qDebug() << "Сreate converter.";
+    qDebug() << cjname << "[" << cjres << "]: [" << cjval << "], " << pname << "[" << pres << "]: [" << pval << "], " << oname << "[" << ores << "]: [" << oval << "]";
   }
+
+  if (debugMode) {
+    qDebug() << "Global settings: [" << gs << "]";
+    qDebug() << "Object settings: [" << os << "]";
+  }
+*/
+  int paramLen = 255;
+  const char * name = "load.cookieJar";
+  QString value = QString::fromUtf8("/tmp/pdfCookieJar.jar");
+  char *cval = new char[paramLen];
+  int cres = wkhtmltopdf_get_global_setting(gs, name, cval, paramLen);
+  if (cres == 0 || strlen(cval) == 0) {
+    wkhtmltopdf_set_global_setting(gs, name, value.toStdString().c_str());
+    if (debugMode) {
+      qDebug() << "[" << cres << "][" << strlen(cval) << "]Set global settings [name][value]: [" << name << "][" << value << "]";
+    }
+  }
+
   conv = wkhtmltopdf_create_converter(gs);
+  if (debugMode) {
+    qDebug() << "Сreated converter: [" << conv << "]";
+  }
 
   if (debugMode) {
     qDebug() << "Set progress changed callback.";
@@ -96,20 +116,15 @@ int run_convert () {
   if (debugMode) {
     qDebug() << "Run convert.";
   }
-  if (!wkhtmltopdf_convert(conv)) {
-    if (debugMode) {
-      fprintf(stderr, "Convertion failed!");
-    }
-  }
-
+  int resConv = wkhtmltopdf_convert(conv);
   if (debugMode) {
+    if (!resConv) {
+      fprintf(stderr, "Convertion failed!");
+    } else {
+      qDebug() << "Convertion success.";
+    }
     printf("httpErrorCode: %d\n", wkhtmltopdf_http_error_code(conv));
   }
-
-  if (debugMode) {
-    qDebug() << "Destroy converter.";
-  }
-  wkhtmltopdf_destroy_converter(conv);
 
   return 0;
 }

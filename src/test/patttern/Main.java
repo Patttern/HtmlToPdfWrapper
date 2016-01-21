@@ -20,7 +20,7 @@ public class Main {
       String sourceLocalHtml = currPath + "/result/sources/QFileInfo_Class.html";
       String destLocalResult = currPath + "/result/out/test_local.pdf";
       String destLocalWithParamResult = currPath + "/result/out/test_local_with_param.pdf";
-      String sourceRemoteHtml = "http://doc.qt.io/qt-5/qfileinfo.html";
+      String sourceRemoteHtml = "http://patttern.blogspot.ru/2015/07/mariadb-nginx-php-fpm-centos-7-page5.html";
       String destRemoteResult = currPath + "/result/out/test_remote.pdf";
 
       // Выводим текущую версию wrapper-а

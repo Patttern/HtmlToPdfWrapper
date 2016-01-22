@@ -90,23 +90,17 @@ int run_convert () {
 
   if (debugMode) {
     qDebug() << "Set progress changed callback.";
-  }
-  wkhtmltopdf_set_progress_changed_callback(conv, progress_changed);
+    wkhtmltopdf_set_progress_changed_callback(conv, progress_changed);
 
-  if (debugMode) {
     qDebug() << "Set phase changed callback.";
-  }
-  wkhtmltopdf_set_phase_changed_callback(conv, phase_changed);
+    wkhtmltopdf_set_phase_changed_callback(conv, phase_changed);
 
-  if (debugMode) {
     qDebug() << "Set error callback.";
-  }
-  wkhtmltopdf_set_error_callback(conv, error);
+    wkhtmltopdf_set_error_callback(conv, error);
 
-  if (debugMode) {
     qDebug() << "Set warning callback.";
+    wkhtmltopdf_set_warning_callback(conv, warning);
   }
-  wkhtmltopdf_set_warning_callback(conv, warning);
 
   if (debugMode) {
     qDebug() << "Add object to converter.";
